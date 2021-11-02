@@ -31,8 +31,7 @@ namespace QPCR
             {
                 new string[] { "Sam 1, Sam2, Sam3", "Reg X, Reg Y", "1" },
                 new string[] { "Sam 1, Sam3, Sam4", "Reg Y, Reg Z", "3" },
-                new string[] { "Sam 1, Sam3, Sam4, Sam5, Sam6", "Reg Y, Reg Z", "3" },
-                new string[] { "Sam 1, Sam3, Sam4, Sam5, Sam6, Sam4, Sam5, Sam6", "Reg Y, Reg Z", "10" }
+                new string[] { "Sam 1, Sam3, Sam4, Sam5, Sam6", "Reg Y, Reg Z", "3" }
             };
 
             ReplicatesView.Rows.Clear();
