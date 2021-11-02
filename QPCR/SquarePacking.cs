@@ -21,6 +21,17 @@ namespace QPCR
         Plate _plate = new Plate(12, 8);
         int plateCounter = 1;
 
+        public Plate Plate {  get { return _plate; } set { _plate = value; } }
+
+        public SquarePacking(List<PackingElements> packingElements)
+        {
+            _elements = packingElements;
+
+            // Sort elements descending by his characteristics
+            // Sort in descending oreder bigger first
+            _elements = ElementsSort(_elements);
+        }
+
         public SquarePacking(string[][] elements)
         {
             List<PackingElements>  packingElements = new List<PackingElements>();
@@ -85,6 +96,7 @@ namespace QPCR
         //ToDo: Remove cyclomatic complexity
         public List<PackedElements> PackElements()
         {
+            _unfilledPositionList = new List<PackingPosition>();
             int positionX = 0;
             int positionY = 0;
 
@@ -202,11 +214,11 @@ namespace QPCR
                         _elements = ElementsSort(_elements);
 
                         // Find positions --  add them to list
-                        
+                        PackingPosition packingPosition = null;
                         // Top left position
                         if (positionHeight > elementHeight)
                         {
-                            PackingPosition packingPosition = new PackingPosition()
+                            packingPosition = new PackingPosition()
                             {
                                 Height = positionHeight - elementHeight,
                                 Width = _plate.Width - positionX,
@@ -241,7 +253,7 @@ namespace QPCR
                         // Lower right position
                         if (positionWidth > elementWidth)
                         {
-                            PackingPosition packingPosition = new PackingPosition()
+                            packingPosition = new PackingPosition()
                             {
                                 Height = elementHeight,
                                 Width = _plate.Width - (positionX + elementWidth),
@@ -275,6 +287,11 @@ namespace QPCR
                                 }
                             }
 
+                        }
+
+                        if (packingPosition != null && !positionOk )
+                        {
+                            _unfilledPositionList.Add(packingPosition);
                         }
                     }
                     #endregion
@@ -345,6 +362,7 @@ namespace QPCR
                 // Reshape
                 if (fitElement.Area < fillPostition.Area)
                 {
+
                     _packedElements.Add(new PackedElements()
                     {
                         Height = fitElement.Area / fillPostition.Width,
@@ -357,10 +375,11 @@ namespace QPCR
                         Reagent = fitElement.Reagent
                     });
 
-                    fillPostition.Y += fitElement.Area / fillPostition.Width;
-                    fillPostition.Height = fillPostition.Y - (fitElement.Area / fillPostition.Width);
+                    fillPostition.Y = fillPostition.Y + (fitElement.Area / fillPostition.Width);
+                    fillPostition.Height = fillPostition.Height - (fitElement.Area / fillPostition.Width);
 
                     _elements.Remove(fitElement);
+
                 }
             }
             if (_elements.Count > 0)
